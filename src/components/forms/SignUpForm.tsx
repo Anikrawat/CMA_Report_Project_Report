@@ -9,13 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "../ui/card";
-import { Separator } from "../ui/separator";
-import Link from "next/link";
-import { toast } from "sonner";
+import { socialSignIn } from "@/helpers/social-sign-in";
 import axios from "axios";
+import Link from "next/link";
+import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
+import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Separator } from "../ui/separator";
+import { useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
  fullName: z.string().min(1, "Full name is required"),
@@ -30,6 +32,8 @@ const formSchema = z.object({
 export default function SignUpForm() {
  const [termsAndConditions, setTermsAndConditions] = useState(false);
  const [isLoading, setIsLoading] = useState(false);
+ const searchParams = useSearchParams();
+ const nextParam = searchParams.get("next");
  const form = useForm<z.infer<typeof formSchema>>({
   resolver: zodResolver(formSchema),
   defaultValues: {
@@ -45,34 +49,17 @@ export default function SignUpForm() {
   try {
    if (termsAndConditions) {
     setIsLoading(true);
-    const response = await axios.post("/api/signup", {
-     ...values,
-     termsAndConditions: termsAndConditions,
+    const url = nextParam ? `/api/sign-up?next=${encodeURIComponent(nextParam)}` : "/api/sign-up";
+    const response = await axios.post(url, {
+     ...values
     });
+    toast.success("Account created successfully");
    } else {
     toast.warning("You must agree to the terms and conditions");
    }
   } catch (error: any) {
+   toast.error(error.response.data.error);
    console.error(error);
-  } finally {
-   setIsLoading(false);
-  }
- }
-
- async function onGoogleSignUp() {
-  try {
-   setIsLoading(true);
-   const values = form.getValues();
-   if (termsAndConditions) {
-    const response = await axios.post("/api/signup", {
-     ...values,
-     termsAndConditions: termsAndConditions,
-    });
-   } else {
-    toast.warning("You must agree to the terms and conditions");
-   }
-  } catch (error: any) {
-   console.error(error.response.data.error);
   } finally {
    setIsLoading(false);
   }
@@ -88,7 +75,7 @@ export default function SignUpForm() {
    </CardHeader>
    <CardContent className="grid gap-4">
     <div className="grid grid-cols-1 gap-4">
-     <Button variant="outline" className="w-full py-6 flex items-center justify-center gap-2 border-border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" onClick={() => { onGoogleSignUp() }}>
+     <Button variant="outline" className="w-full py-6 flex items-center justify-center gap-2 border-border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" onClick={() => { socialSignIn("google") }}>
       <FaGoogle className="text-2xl" />
       Sign up with Google
      </Button>

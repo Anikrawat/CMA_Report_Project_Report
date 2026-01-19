@@ -1,9 +1,13 @@
+import { auth } from '@/lib/auth';
 import { headers } from "next/headers";
-import { auth } from '@/lib/auth'
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const nextParam = searchParams.get("next");
+    const baseUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000";
+    const callbackURL = nextParam ? `${baseUrl}${nextParam}` : `${baseUrl}/dashboard`;
 
     const { email, password } = await request.json();
 
@@ -12,7 +16,7 @@ export async function POST(request: Request) {
         email, // required
         password, // required
         rememberMe: true,
-        callbackURL: "http://localhost:3000/dashboard",
+        callbackURL,
       },
       // This endpoint requires session cookies.
       headers: await headers(),

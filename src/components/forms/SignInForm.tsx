@@ -6,17 +6,16 @@ import { z } from "zod";
 
 import InputFormField from "@/components/form-fields/InputFormField";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Form } from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "../ui/card";
-import { Separator } from "../ui/separator";
-import Link from "next/link";
-import { toast } from "sonner";
+import { socialSignIn } from "@/helpers/social-sign-in";
 import axios from "axios";
-import { FaGoogle } from "react-icons/fa";
-import { FaSignInAlt } from "react-icons/fa";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { FaGoogle, FaSignInAlt } from "react-icons/fa";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Separator } from "../ui/separator";
+import { toast } from "sonner";
 
 
 const formSchema = z.object({
@@ -35,13 +34,17 @@ export default function SignInForm() {
   },
   mode: "onBlur",
  });
+ const searchParams = useSearchParams();
+ const nextParam = searchParams.get("next");
 
  async function onSubmit(values: z.infer<typeof formSchema>) {
   try {
    setIsLoading(true);
-   const response = await axios.post("/api/signin", {
+   const url = nextParam ? `/api/sign-in?next=${encodeURIComponent(nextParam)}` : "/api/sign-in";
+   const response = await axios.post(url, {
     ...values,
    });
+   toast.success("Signed in successfully");
   } catch (error: any) {
    console.error(error);
   } finally {
@@ -49,19 +52,21 @@ export default function SignInForm() {
   }
  }
 
- async function onGoogleSignIn() {
-  try {
-   setIsLoading(true);
-   const values = form.getValues();
-   const response = await axios.post("/api/signin", {
-    ...values,
-   });
-  } catch (error: any) {
-   console.error(error.response.data.error);
-  } finally {
-   setIsLoading(false);
-  }
- }
+ // async function onGoogleSignIn() {
+ //  try {
+ //   setIsLoading(true);
+ //   const values = form.getValues();
+ //   const response = await axios.post("/api/sign-in", {
+ //    ...values,
+ //   });
+ //   toast.success("Signed in successfully");
+ //  } catch (error: any) {
+ //   toast.error(error.response.data.error);
+ //   console.error(error.response.data.error);
+ //  } finally {
+ //   setIsLoading(false);
+ //  }
+ // }
 
  return (
   <Card className="w-full max-w-md bg-card shadow-lg border-border">
@@ -73,7 +78,7 @@ export default function SignInForm() {
    </CardHeader>
    <CardContent className="grid gap-4">
     <div className="grid grid-cols-1 gap-4">
-     <Button variant="outline" className="w-full py-6 flex items-center justify-center gap-2 border-border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" onClick={() => { onGoogleSignIn() }}>
+     <Button variant="outline" className="w-full py-6 flex items-center justify-center gap-2 border-border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer" onClick={() => { socialSignIn("google") }}>
       <FaGoogle className="text-2xl" />
       Sign in with Google
      </Button>
