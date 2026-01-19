@@ -5,6 +5,10 @@ import { ZodError } from 'zod';
 
 export async function POST(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const nextParam = searchParams.get("next");
+    const baseUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000";
+    const callbackURL = nextParam ? `${baseUrl}${nextParam}` : `${baseUrl}/dashboard`;
     const body = await request.json()
     const { email, password, name } = signUpServerSchema.parse(body);
 
@@ -13,7 +17,7 @@ export async function POST(request: Request) {
         name,
         email,
         password,
-        callbackURL: "http://localhost:3000/dashboard",
+        callbackURL,
       },
     });
 

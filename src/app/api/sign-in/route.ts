@@ -1,11 +1,15 @@
+import { auth } from '@/lib/auth';
 import { headers } from "next/headers";
-import { auth } from '@/lib/auth'
 import { NextResponse } from "next/server";
 import { signInSchema } from "@/Schemas/sign-in-schema";
 import { ZodError } from "zod";
 
 export async function POST(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const nextParam = searchParams.get("next");
+    const baseUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000";
+    const callbackURL = nextParam ? `${baseUrl}${nextParam}` : `${baseUrl}/dashboard`;
     const body = await request.json()
     const { email, password } = signInSchema.parse(body);
 
@@ -14,7 +18,7 @@ export async function POST(request: Request) {
         email, // required
         password, // required
         rememberMe: true,
-        callbackURL: "http://localhost:3000/dashboard",
+        callbackURL,
       },
       // This endpoint requires session cookies.
       headers: await headers(),
