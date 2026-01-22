@@ -41,19 +41,19 @@ export default function SignUpForm() {
     }
   }
   return (
-    <Card className="w-full max-w-3xl h-full bg-card shadow-lg border-border rounded-[4px]">
+    <Card className="w-full max-w-3xl h-full bg-card shadow-lg border-border rounded-[6px]">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center text-foreground">Contact Us</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center text-foreground">CONTACT US</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-2 gap-6"
+            className="grid grid-cols-2 gap-6 mb-2"
           >
             <InputFormField
               wrapperClassName="col-span-2"
-              className="py-6 px-3 rounded-none"
+              className="py-6 px-3 rounded-[4px]"
               labelClassName="font-medium"
               control={form.control}
               name="name"
@@ -63,29 +63,29 @@ export default function SignUpForm() {
 
             <InputFormField
               control={form.control}
-              className="py-6 px-3 rounded-none"
+              className="py-6 px-3 rounded-[4px]"
               labelClassName="font-medium"
               name="email"
-              label="Email"
+              label="EMAIL"
               placeholder="name@example.com"
             />
 
             <InputFormField
               control={form.control}
-              className="py-6 px-3 rounded-none"
+              className="py-6 px-3 rounded-[4px]"
               labelClassName="font-medium"
               name="phoneNumber"
-              label="Phone Number"
-              placeholder="+91 8329493953"
+              label="PHONE NUMBER"
+              placeholder="8329493953"
             />
 
             <InputFormField
               wrapperClassName="col-span-2"
-              className="py-6 px-3 rounded-none"
+              className="py-6 px-3 rounded-[4px]"
               labelClassName="font-medium"
               control={form.control}
               name="message"
-              label="Message"
+              label="MESSAGE"
               placeholder="eg. Lorem ipsum doler sit"
               type="textarea"
             />
@@ -94,7 +94,7 @@ export default function SignUpForm() {
             <Button
               type="submit"
               variant="default"
-              className="rounded-none col-span-2 w-full py-6 font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer"
+              className="rounded-[4px] col-span-2 w-full py-6 font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer"
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="animate-spin" />}
